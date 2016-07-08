@@ -1,0 +1,15 @@
+{
+  "name": "video-concentrate-program",
+  "version": "0.0.1",
+  "dependencies": {
+    "bootstrap-sass": "~3.3.5",
+    "bower": "*",
+    "font-awesome": "~4.3.0",
+    "install": "~1.0.4",
+    "jquery": "~1.11.3",
+    "Jcrop": "^2.0.4"
+  },
+  "resolutions": {
+    "jquery": "~1.11.3"
+  }
+}

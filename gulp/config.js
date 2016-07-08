@@ -3,7 +3,9 @@
 var gutil = require('gulp-util');
 
 exports.paths = {
-  static: 'static'
+  public: 'public',
+  views: 'views',
+  server: '/'
 };
 
 //用于wiredep获取bower依赖主要JS文件列表的options

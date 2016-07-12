@@ -1,0 +1,3 @@
+(function(ajax){
+
+})(window.ajax);

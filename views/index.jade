@@ -12,18 +12,74 @@ html
         link(rel='stylesheet', href='../bower_components/font-awesome/css/font-awesome.css')
         link(rel='stylesheet', href='../bower_components/Jcrop/css/Jcrop.css')
         //- endbower
-        //- inject:css
-        link(rel="stylesheet", href="/public/css/index.css")
-        //- endinject
         
+        //- inject:css
+        link(rel='stylesheet', href='css/index.css')
+        //- endinject
         
         //- bower:js
         script(src='../bower_components/jquery/dist/jquery.js')
+        script(src='../bower_components/bootstrap-sass/assets/javascripts/bootstrap.js')
         script(src='../bower_components/Jcrop/js/Jcrop.js')
         //- endbower
-    body
-        .row
-            .col-xs-12
-                .container
+    body.ui
+        .container-fluid
+            .row
+                .col-xs-12
+                    include ./parital/navbar.jade
+            .row
+                .col-xs-2
+                .col-xs-8
+                    .nav-tab
+                        ul.nav.nav-pills
+                            li
+                                button.btn.btn-primary.create-new-job(type="button") 创建视频浓缩任务
+                                    i.fa.fa-plus
+                    
+        .create-new-video-form-container
+        .main-form
+            div.progress(style="position:absolute;top:0;left:0")
+                .progress-bar.progress-bar-success.progress-bar-striped.active(role="progressbar" style="width:0%")
+            form(action="#" enctype="multipart/form-data" method="POST")
+                .form-group
+                    label(for="videoJabName") 任务名称
+                    input#videoJobName.input.form-control(type="text" placeholder="任务名称" name="videoJobName")
+                    span.text-danger.hide.err-notice 请填写视频任务名称
+                .form-group.select-video-group
+                    lable(for="video") 选择视频文件
+                    input#video.input.form-control(type="file" style=" visibility:hidden; z-index=-99999" name="video")
+                    input#videoSelect.form-control(type="text" readonly name="videoPath")
+                    button.btn.btn-success.select-video 选择视频文件
+                    span.text-danger.hide.err-notice 请上传视频格式文件(avi, mp4. mp5)
+                button.btn.btn-primary.submit-form-btn(type="submit") 上传视频文件到数据卷
+            form.set-parameter-form.clearfix.hide(action="#" method="POST" enctype="application/x-www-form-urlencoded")
+                .left-pane
+                    
+                    h3 选取感兴趣区域
+                    div.img-container
+                        img.img-responsive#imgForInterest(alt="picture")
+                .right-pane
+                    .form-group
+                        label(for="radio") 设置压缩比
+                        input#radio.form-control(type="text" name="radio" placeholder="如: 1.5(默认为1)")
+                    .form-group
+                        label(for="impact") 设置碰撞比
+                        input#impact.form-control(type="text" name="impact" placeholder="如: 1(默认为1)")
+                    
+                    .parameter-container.form-inline
+                        .form-group
+                            label(for="x1") x1
+                            input#x1.form-control(type="text" name="x1")
+                            label(for="y1") y1
+                            input#y1.form-control(type="text" name="y1")
+                        .form-group
+                            label(for="x2") x2
+                            input#x2.form-control(type="text" name="x2")
+                            label(for="y2") y2
+                            input#y2.form-control(type="text" name="y2")
+                    button.btn.btn-primary#startVideoEnrichJobBtn(type="submit" style="width:100%") 开启任务                     
+                
         //- inject:js
+        script(src='js/ajax.js')
+        script(src='js/main.js')
         //- endinject

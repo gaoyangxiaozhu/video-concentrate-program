@@ -10,7 +10,7 @@ exports.paths = {
 
 //用于wiredep获取bower依赖主要JS文件列表的options
 exports.wiredep = {
-  exclude: [/bootstrap.js$/, /bootstrap-sass-official\/.*\.js/, /bootstrap\.css/],
+  exclude: [/bootstrap-sass-official\/.*\.js/, /bootstrap\.css/],
   directory: 'bower_components'
 };
 

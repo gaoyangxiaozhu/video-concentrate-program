@@ -35,7 +35,7 @@ gulp.task('watch', function () {
 		});
 		//监控jade文件
 		gulp.watch([
-				path.join(config.paths.views, '/*.jade')
+				path.join(config.paths.views, '/**/*.jade')
 			],function (event) {
 				browserSync.reload(event.path);
 			});

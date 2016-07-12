@@ -109,12 +109,26 @@ gulp.task('inject', ['scripts', 'styles:compass'], function () {
   var injectScripts = gulp.src([
     path.join(config.paths.public, 'js/**/*.js'),
   ]);
+  var injectOptions = {
+    transform: function(filePath) {
+      filePath = filePath.replace(config.paths.public + '/', '');
+      if(filePath.slice(-2) === 'js'){
+          return "script(src='" + filePath + "')";
+      }else{
+          return "link(rel='stylesheet', href='" + filePath + "')";
+      }
+      return filePath;
+    },
+    starttag: '//- inject:{{ext}}',
+    endtag: '//- endinject',
+    addRootSlash: false
+  };
 	return gulp.src(path.join(config.paths.views, '/index.jade'))
 		.pipe($.plumber(config.errorHandler()))
 		.pipe($.inject($.eventStream.merge(
 		  injectStyles,
 		  injectScripts
-		)))
+      ), injectOptions))
 		.pipe(wiredep(_.extend({}, config.wiredep)))
         .pipe(gulp.dest(config.paths.views));
 });

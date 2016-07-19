@@ -22,6 +22,7 @@ html
         script(src='../bower_components/bootstrap-sass/assets/javascripts/bootstrap.js')
         script(src='../bower_components/Jcrop/js/Jcrop.js')
         //- endbower
+        
     body.ui
         .container-fluid
             .row
@@ -35,6 +36,34 @@ html
                             li
                                 button.btn.btn-primary.create-new-job(type="button") 创建视频浓缩任务
                                     i.fa.fa-plus
+            .row
+                .col-xs-2
+                .col-xs-8
+                    table.table.video-list-table
+                        thead
+                            tr 
+                                th 任务名称
+                                th 任务类型
+                                th 任务状态
+                                th 执行动作
+                                th 下载    
+                        tbody
+                            tr
+                                td job
+                                td 视频浓缩
+                                td.status 
+                                    span.done 完成
+                                    ul.clearfix
+                                        li
+                                        li
+                                        li
+                                        li
+                                td.action
+                                    button.btn.btn-primary.play-video 播放
+                                td.download
+                                    a(href="http://0.0.0.0:8888/out.avi")
+                                        span
+                                            i.fa.fa-download(aria-hidden="true")
                     
         .create-new-video-form-container
         .main-form
@@ -60,25 +89,35 @@ html
                         img.img-responsive#imgForInterest(alt="picture")
                 .right-pane
                     .form-group
-                        label(for="radio") 设置压缩比
-                        input#radio.form-control(type="text" name="radio" placeholder="如: 1.5(默认为1)")
+                        label(for="compressedRate") 设置压缩比
+                        input#compressedRate.form-control(type="text" name="compressedRate" placeholder="如: 15")
                     .form-group
-                        label(for="impact") 设置碰撞比
-                        input#impact.form-control(type="text" name="impact" placeholder="如: 1(默认为1)")
+                        label(for="overlap") 设置碰撞比
+                        input#overlap.form-control(type="text" name="overlap" placeholder="如: 1")
                     
                     .parameter-container.form-inline
                         .form-group
-                            label(for="x1") x1
+                            label(for="x1") X1
                             input#x1.form-control(type="text" name="x1")
-                            label(for="y1") y1
+                            label(for="y1") Y1
                             input#y1.form-control(type="text" name="y1")
                         .form-group
-                            label(for="x2") x2
-                            input#x2.form-control(type="text" name="x2")
-                            label(for="y2") y2
-                            input#y2.form-control(type="text" name="y2")
-                    button.btn.btn-primary#startVideoEnrichJobBtn(type="submit" style="width:100%") 开启任务                     
-                
+                            label(for="w") W
+                            input#w.form-control(type="text" name="W")
+                            label(for="h") H
+                            input#h.form-control(type="text" name="H")
+                    input(type="hidden" value="out.avi" name="videoJobName")
+                    button.btn.btn-primary#startVideoEnrichJobBtn(type="submit" style="width:100%") 开启任务 
+        #videoModel.modal.fade
+            .modal-dialog(role="document")
+                .modal-content
+                    .modal-header
+                        button.close(type="button" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    .modal-body
+                        video#playVideo(width="100%" src="http://0.0.0.0:8888/out.mp4" autoplay controls="controls") 
+                    .modal-footer        
+        script(src="http://localhost:9090/socket.io/socket.io.js")
         //- inject:js
         script(src='js/ajax.js')
         script(src='js/main.js')

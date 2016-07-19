@@ -83,3 +83,66 @@
         }
     }
 }
+table,
+.table{
+    > tbody{
+        > tr{
+            > td{
+                padding-top: 13px;
+                &.action{
+                    padding-top:6px;
+                }
+                span{
+                    display: inline-block;
+                    &+ul{
+                        display: none;
+                    }
+                    &.done{
+                        color:rgb(52, 177, 55);
+                    }
+                    &.progress-job{
+                        color: rgb(154, 209, 137);
+                        &+ul{
+                            display: inline-block;
+                            list-style: none;
+                            position: relative;
+                            li{
+                                list-style: none;
+                                position: absolute;
+                                bottom: -10px;
+                                left: 0;
+                                width: 5px;
+                                height: 5px;
+                                color: rgb(154, 209, 137);
+                                font-weight: bolder;
+                                @include border-radius(5px);
+                                background-color: rgb(154, 209, 137);
+                                &:nth-child(1) {
+                                  @include animation(progress 1.2s  .2s infinite cubic-bezier(.19,.82,.63,.3) );
+                                }
+                                &:nth-child(2) {
+                                  @include animation(progress 1.2s .45s infinite cubic-bezier(.19,.82,.63,.3) );
+                                }
+                                &:nth-child(3) {
+                                  @include animation(progress 1.2s .7s infinite cubic-bezier(.19,.82,.63,.3) );
+                                }
+                                &:nth-child(4) {
+                                  @include animation(progress 1.2s 0s infinite cubic-bezier(.19,.82,.63,.3) );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
+@include keyframes(progress){
+  0%{   @include transform(translate(0px, 0px)); }
+  25%{  @include transform(translate(20px, 0px)); }
+  50%{  @include transform(translate(60px, 0px)); }
+  60%{  @include transform(translate(80px, 0px)); }
+  75%{  @include transform(translate(100px, 0px)); }
+  100%{ @include transform(translate(100px, 0px)); }
+}

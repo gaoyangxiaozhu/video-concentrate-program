@@ -57,7 +57,7 @@ $(function(){
                 element.className = classNames.join(" ");
             }
 
-            return element; //支持链式调用
+            return element;
         },
         addClass: function(element, className){
             var classNames = element.className.split(/\s+/);
@@ -91,6 +91,19 @@ $(function(){
         });
     });
 
+    /*
+     * @description 表单重置功能函数
+     */
+    function resetForms(){
+        document.getElementsByClassName('progress-bar')[0].style = "width:0%";
+        EventUtil.removeClass(document.body, 'show'); // 移除表单面板以及遮罩效果
+        //重置表单
+        forms[0].reset();
+        forms[1].reset();
+        EventUtil.removeClass(forms[0], 'hide');
+        EventUtil.addClass(forms[1], 'hide');
+    }
+
     //点击创建视频浓缩任务 显示创建面板
     var creatNewJob = document.getElementsByClassName('create-new-job')[0];
 
@@ -99,7 +112,10 @@ $(function(){
         EventUtil.addClass(document.body, 'show');
     });
 
-
+    //点击面板阴影遮罩 重置表单状态 并隐藏面板
+    EventUtil.addHandler(document.getElementsByClassName('create-new-video-form-container')[0], 'click', function(event){
+        resetForms();
+    });
 
     var selectVideoBtn = document.getElementsByClassName ? document.getElementsByClassName('select-video')[0] : document.querySelector('.selectVideo');
     var videoInput = document.getElementById('video');
@@ -143,6 +159,7 @@ $(function(){
             EventUtil.removeClass(noticeSpanForVideoName, 'hide');
         }else{
             EventUtil.addClass(noticeSpanForVideoName, 'hide');
+            forms[1].elements.videoJobName.value = [videoJobName, (new Date()).getTime()].join('_');
 
             var xhr = new XMLHttpRequest();
             var videoFormData = new FormData(forms[0]);
@@ -154,9 +171,9 @@ $(function(){
 
                 function showSelectedCoords(c){
                     document.getElementById('x1').value = c.x;
-                    document.getElementById('x2').value = c.x2;
                     document.getElementById('y1').value = c.y;
-                    document.getElementById('y2').value = c.y2;
+                    document.getElementById('w').value = c.w;
+                    document.getElementById('h').value = c.h;
                 }
                 document.getElementById('imgForInterest').src="images/temp.jpg";
                 var _currentJcrop;
@@ -169,6 +186,7 @@ $(function(){
                 });
                 EventUtil.addClass(forms[0], 'hide');
                 EventUtil.removeClass(forms[1], 'hide');
+                progressBar.style.width = '0%';
             }));
             xhr.send(videoFormData);
 
@@ -202,18 +220,109 @@ $(function(){
     EventUtil.addHandler(document.getElementsByClassName('parameter-container')[0], 'change', function(event){
     });
     // #startVideoEnrichJobBtn 功能
+    //设置点击play-video显示模态框
+    $(document).on('click', '.play-video', function(){
+        $("#videoModel").modal();
+    });
+
     var startVideoEnrichJobBtn = document.getElementById('startVideoEnrichJobBtn');
-    EventUtil.addHandler(startVideoEnrichJobBtn, 'click', function(event){
-        var data = new FormData(document.getElementsByClassName('set-parameter-form')[0]);
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/api/startVideoJob");
-        EventUtil.addHandler(xhr, 'load', uploadComplete(null, function(event){
+    var socket = io.connect("http://0.0.0.0:9090");
 
-        }));
-        xhr.send(data);
+    socket.on('notice', function(data){
+        if(data && data.code){
+            switch (parseInt(data.code)) {
+                case 0: //error
+                    alert(data.err_message);
+                    break;
+                case 1: //连接成功
+                console.log('socket connect successfully');
+                    break;
+                case 2: //视频浓缩任务容器开启
+                    break;
+                case 5://完成
+                    var currentVideoName = data.outputVideoName;
+                    var button = document.createElement('button');
+                    button.className="btn btn-primary play-video";
+                    button.appendChild(document.createTextNode("播放"));
+                    var parent = document.getElementsByTagName('tbody')[0].lastElementChild;
+                    var btnParent = parent.getElementsByClassName('action')[0];
+                    btnParent.appendChild(button);
+                    var link = document.createElement('a');
+                    link.setAttribute("href", "http://0.0.0.0:8888/" + currentVideoName.replace(/\.mp4/, '.avi'));
+                    var spanInLink = document.createElement('span');
+                    var i = document.createElement('i');
+                    i.className="fa fa-download";
+                    spanInLink.appendChild(i);
+                    link.appendChild(spanInLink);
+                    var downParent = parent.getElementsByClassName('download')[0];
+                    downParent.appendChild(link);
+                    var progressJob = parent.getElementsByClassName('progress-job')[0];
+                    progressJob.innerHTML ="完成";
+                    EventUtil.removeClass(progressJob, 'progress-job');
+                    EventUtil.addClass(progressJob, 'done');
+                    EventUtil.addHandler(btnParent.getElementsByClassName('play-video')[0], 'click', function(event){
+                        document.getElementById('playVideo').setAttribute("src", "http://0.0.0.0:8888/" + currentVideoName);
+                    });
 
-
-
+                    break;
+            }
+        }
+    });
+    socket.on('readStatus', function(status){
 
     });
+    EventUtil.addHandler(startVideoEnrichJobBtn, 'click', function(event){
+        var data = {};
+
+        data.containerName = forms[1].elements.videoJobName.value;
+        data.compressedRate = parseInt(document.getElementById('compressedRate').value);
+        data.overlap = document.getElementById('overlap').value;
+
+        data.x1 = parseInt(document.getElementById('x1').value);
+        data.y1 = parseInt(document.getElementById('y1').value);
+
+        data.x2 = parseInt(document.getElementById('x1').value) + parseInt(document.getElementById('w').value);
+        data.y2 = parseInt(document.getElementById('y1').value);
+        data.x3 = parseInt(document.getElementById('x1').value) + parseInt(document.getElementById('w').value);
+        data.y3 = parseInt(document.getElementById('y1').value) +parseInt(document.getElementById('h').value);
+        data.x4 = parseInt(document.getElementById('x1').value);
+        data.y4 = parseInt(document.getElementById('y1').value) + parseInt(document.getElementById('h').value);
+
+        socket.emit('startVideoJob', data); //开启任务
+        var tr = document.createElement("tr");
+        var td1 = document.createElement("td");
+        td1.appendChild(document.createTextNode(document.getElementById('videoJobName').value));
+        tr.appendChild(td1);
+        var td2 = document.createElement('td');
+        td2.appendChild(document.createTextNode("视频浓缩"));
+        var td3 = document.createElement('td');
+        td3.className="status";
+        var span = document.createElement('span');
+        span.className = "progress-job";
+        span.appendChild(document.createTextNode('正在处理'));
+        var ul = document.createElement('ul');
+        ul.appendChild(document.createElement('li'));
+        ul.appendChild(document.createElement('li'));
+        ul.appendChild(document.createElement('li'));
+        ul.appendChild(document.createElement('li'));
+        ul.className = "clearfix";
+        td3.appendChild(span);
+        td3.appendChild(ul);
+        var td4 = document.createElement('td');
+        td4.className = "action";
+        var td5 = document.createElement('td');
+        td5.className = "download";
+
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td4);
+        tr.appendChild(td5);
+
+        var tbody = document.getElementsByClassName('video-list-table')[0].getElementsByTagName('tbody')[0];
+        tbody.appendChild(tr);
+        resetForms();//进行表单重置
+    });
+
+
+
 });

@@ -5,3 +5,4 @@ node_modules/
 *.css.map
 uploads/
 public/images/temp.jpg
+public/css/*.css
